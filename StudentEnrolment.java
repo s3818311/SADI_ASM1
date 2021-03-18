@@ -1,20 +1,23 @@
 public class StudentEnrolment {
-    private Student student;
-    private Course course;
+    private String studentId;
+    private String courseId;
     private String semester;
 
-    public StudentEnrolment(Student student, Course course, String semester) {
-        this.student = student;
-        this.course = course;
+    public StudentEnrolment() {
+    }
+
+    public StudentEnrolment(String studentId, String courseId, String semester) {
+        this.studentId = studentId;
+        this.courseId = courseId;
         this.semester = semester;
     }
 
-    public Student getStudent() {
-        return student;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public Course getCourse() {
-        return course;
+    public String getCourseId() {
+        return courseId;
     }
 
     public String getSemester() {
@@ -25,7 +28,7 @@ public class StudentEnrolment {
     public boolean equals(Object obj) {
         if (obj instanceof StudentEnrolment) {
             StudentEnrolment other = (StudentEnrolment) obj;
-            return (this.student.equals(other.student) && this.course.equals(other.course)
+            return (this.studentId.equals(other.studentId) && this.courseId.equals(other.courseId)
                     && this.semester.equals(other.semester));
         }
 
@@ -34,12 +37,10 @@ public class StudentEnrolment {
 
     @Override
     public String toString() {
-        return String.format("Student id: %s\nCourse id: %s\nSemester: %s\n", student.getId(), course.getId(),
-                semester);
+        return String.format("Student id: %s\nCourse id: %s\nSemester: %s\n", studentId, courseId, semester);
     }
 
     public StudentEnrolment clone() {
-        return new StudentEnrolment(this.student, this.course, this.semester);
+        return new StudentEnrolment(this.studentId, this.courseId, this.semester);
     }
-
 }
