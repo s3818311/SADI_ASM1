@@ -1,3 +1,4 @@
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,14 +25,8 @@ public class Student {
         return dob;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Student) {
-            Student other = (Student) obj;
-            return (this.id.equals(other.id));
-        }
-
-        return false;
+    public boolean equals(Student other) {
+        return (this.id.equals(other.id));
     }
 
     @Override

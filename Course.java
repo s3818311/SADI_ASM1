@@ -21,14 +21,8 @@ public class Course {
         return credits;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Course) {
-            Course other = (Course) obj;
-            return (this.id.equals(other.id));
-        }
-
-        return false;
+    public boolean equals(Course other) {
+        return (this.id.equals(other.id));
     }
 
     @Override

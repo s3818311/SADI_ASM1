@@ -28,11 +28,10 @@ public class StudentEnrolment {
     public boolean equals(Object obj) {
         if (obj instanceof StudentEnrolment) {
             StudentEnrolment other = (StudentEnrolment) obj;
-            return (this.studentId.equals(other.studentId) && this.courseId.equals(other.courseId)
-                    && this.semester.equals(other.semester));
-        }
 
-        return false;
+    public boolean equals(StudentEnrolment other) {
+        return (this.studentId.equals(other.studentId) && this.courseId.equals(other.courseId)
+                && this.semester.equals(other.semester));
     }
 
     @Override
