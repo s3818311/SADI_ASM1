@@ -24,14 +24,20 @@ public class StudentEnrolment {
         return semester;
     }
 
+    public static StudentEnrolment parseCsvStr(String studString) {
+        String[] data = studString.split(",");
+
+        return new StudentEnrolment(data[0], data[1], data[2]);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof StudentEnrolment) {
             StudentEnrolment other = (StudentEnrolment) obj;
-
-    public boolean equals(StudentEnrolment other) {
-        return (this.studentId.equals(other.studentId) && this.courseId.equals(other.courseId)
-                && this.semester.equals(other.semester));
+            return (this.studentId.equals(other.studentId) && this.courseId.equals(other.courseId)
+                    && this.semester.equals(other.semester));
+        }
+        return false;
     }
 
     @Override
