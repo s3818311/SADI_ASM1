@@ -67,7 +67,18 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     @Override
-    public StudentEnrolment getOne() {
+    public StudentEnrolment getOne(int opt, String id) {
+        if (opt == 1) {
+            System.out.format("%s's courses: \n", id);
+            for (StudentEnrolment enrolment : studentEnrolments)
+                if (enrolment.getStudentId().equals(id))
+                    System.out.println(" |-" + enrolment.getCourseId());
+        } else {
+            System.out.format("Students enrolling in %s\n", id);
+            for (StudentEnrolment enrolment : studentEnrolments)
+                if (enrolment.getCourseId().equals(id))
+                    System.out.println(" |-" + enrolment.getStudentId());
+        }
 
         return null;
     }
