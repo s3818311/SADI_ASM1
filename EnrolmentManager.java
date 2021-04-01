@@ -85,7 +85,21 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     @Override
     public void getAll() {
+        System.out.println("Student enrolments:");
+        for (StudentEnrolment enrolment : studentEnrolments) {
+            System.out.println("--------------------");
+            System.out.println(enrolment);
+        }
 
+        System.out.println("\nStudents: ");
+        for (String sid : studentIdsList) {
+            System.out.println("|-" + sid);
+        }
+
+        System.out.println("\nCourses: ");
+        for (String cid : coursesIdsList) {
+            System.out.println("|-" + cid);
+        }
     }
 
     protected void finalize() {
