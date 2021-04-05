@@ -1,4 +1,3 @@
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,20 +28,7 @@ public class Main {
         while (run) {
             printMenu();
 
-            int inp = 0;
-
-            try {
-                inp = scanner.nextInt();
-            } catch (InputMismatchException ex) {
-                System.out.println("Please enter a number between 1 and 3");
-                scanner.next();
-                continue;
-            }
-
-            if (inp < 1 || inp > 7) {
-                System.out.println("Please enter a number between 1 and 7");
-                continue;
-            }
+            int inp = validator.getValidatedIntChoice(7);
 
             switch (inp) {
             case 1:
@@ -131,19 +117,7 @@ public class Main {
         while (run) {
             printGetOneMenu();
 
-            int inp = 0;
-            try {
-                inp = scanner.nextInt();
-            } catch (InputMismatchException ex) {
-                System.out.println("Please enter a number between 1 and 4");
-                scanner.next();
-                continue;
-            }
-
-            if (inp < 1 || inp > 4) {
-                System.out.println("Please enter a number between 1 and 4");
-                continue;
-            }
+            int inp = validator.getValidatedIntChoice(4);
 
             String semester = validator.getValidatedSemester("Please enter the semester: ");
 

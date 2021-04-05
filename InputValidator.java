@@ -1,8 +1,8 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class InputValidator {
-    private EnrolmentManager manager = EnrolmentManager.getInstance();
     private Scanner scanner = Main.scanner;
     private Pattern studentIdPattern = Pattern.compile("^\\d{7}$");
     private Pattern courseIdPattern = Pattern.compile("^[A-Z]{4}\\d{4}$");
@@ -54,6 +54,21 @@ public class InputValidator {
                 System.out.println("Please enter the semester in the correct format.");
             }
         }
+    }
+
+    public int getValidatedIntChoice(int max) {
+        int inp = 0;
+        try {
+            inp = scanner.nextInt();
+            if (inp < 1 || inp > max)
+                throw new InputMismatchException();
+        } catch (InputMismatchException e) {
+            System.out.printf("Please enter a number between 1 and %d\n", max);
+            scanner.next();
+            return 0;
+        }
+
+        return inp;
     }
 
 }
