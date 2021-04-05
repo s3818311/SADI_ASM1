@@ -5,7 +5,7 @@ public interface StudentEnrolmentManager {
 
     public void delete(int index);
 
-    public StudentEnrolment getOne(int opt, String id);
+    public void getOne(int opt, String id, String semester);
 
     public void getAll();
 }

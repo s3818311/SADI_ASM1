@@ -67,20 +67,25 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     @Override
-    public StudentEnrolment getOne(int opt, String id) {
+    public void getOne(int opt, String id, String semester) {
         if (opt == 1) {
-            System.out.format("%s's courses: \n", id);
+            System.out.format("%s's courses in semester %s:\n", id, semester);
             for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.getStudentId().equals(id))
-                    System.out.println(" |-" + enrolment.getCourseId());
+                if (enrolment.getStudentId().equals(id) && enrolment.getSemester().equals(semester))
+                    System.out.printf(" |- %s\n", enrolment.getCourseId());
+        } else if (opt == 2) {
+            System.out.format("Students enrolling in %s for semester %s:\n", id, semester);
+            for (StudentEnrolment enrolment : studentEnrolments)
+                if (enrolment.getCourseId().equals(id) && enrolment.getSemester().equals(semester))
+                    System.out.printf(" |- %s\n", enrolment.getStudentId());
         } else {
-            System.out.format("Students enrolling in %s\n", id);
-            for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.getCourseId().equals(id))
-                    System.out.println(" |-" + enrolment.getStudentId());
+            System.out.printf("Courses offered in semester %s:\n", semester);
+            for (StudentEnrolment enrolment : studentEnrolments) {
+                if (enrolment.getSemester().equals(semester))
+                    System.out.printf(" |- %s\n", enrolment.getCourseId());
+            }
         }
 
-        return null;
     }
 
     @Override
