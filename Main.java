@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,7 +29,15 @@ public class Main {
         while (run) {
             printMenu();
 
-            int inp = scanner.nextInt();
+            int inp = 0;
+
+            try {
+                inp = scanner.nextInt();
+            } catch (InputMismatchException ex) {
+                System.out.println("Please enter a number between 1 and 3");
+                scanner.next();
+                continue;
+            }
 
             if (inp < 1 || inp > 7) {
                 System.out.println("Please enter a number between 1 and 7");
@@ -109,9 +118,10 @@ public class Main {
 
     public static void printGetOneMenu() {
         System.out.println("\n-------GET INFO-------");
-        System.out.println("1 Get all courses from a student");
-        System.out.println("2 Get all students in a course");
-        System.out.println("3 Back");
+        System.out.println("1 Get all courses from a student in a semester");
+        System.out.println("2 Get all students from a course in a semester");
+        System.out.println("3 Get all courses offered in a semester");
+        System.out.println("4 Back");
         System.out.print("> ");
     }
 
@@ -121,23 +131,34 @@ public class Main {
         while (run) {
             printGetOneMenu();
 
-            int inp = scanner.nextInt();
-
-            if (inp < 1 || inp > 3) {
-                System.out.println("Please enter a number between 1 and 3");
+            int inp = 0;
+            try {
+                inp = scanner.nextInt();
+            } catch (InputMismatchException ex) {
+                System.out.println("Please enter a number between 1 and 4");
+                scanner.next();
                 continue;
             }
+
+            if (inp < 1 || inp > 4) {
+                System.out.println("Please enter a number between 1 and 4");
+                continue;
+            }
+
+            String semester = validator.getValidatedSemester("Please enter the semester: ");
 
             switch (inp) {
             case 1:
                 String sid = validator.getValidatedStudentId("Please enter the student id: ");
-                manager.getOne(inp, sid);
+                manager.getOne(inp, sid, semester);
                 break;
             case 2:
                 String cid = validator.getValidatedCourseId("Please enter the course id: ");
-                manager.getOne(inp, cid);
+                manager.getOne(inp, cid, semester);
                 break;
             case 3:
+                manager.getOne(inp, null, semester);
+            case 4:
                 run = false;
             }
         }
