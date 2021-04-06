@@ -85,40 +85,36 @@ public class Main {
     }
 
     public static void addEnrolment() {
-        System.out.println();
-        String studentId = validator.getValidatedStudentId("Student Id: ");
-        String courseId = validator.getValidatedCourseId("Course Id: ");
+        System.out.println("\n------ADD ENROLMENT------");
+        String sid = validator.getValidatedStudentId("Student Id: ");
+        String cid = validator.getValidatedCourseId("Course Id: ");
         String semester = validator.getValidatedSemester("Semester: ");
 
-        if (manager.add(new StudentEnrolment(studentId, courseId, semester)))
+        if (manager.add(new StudentEnrolment(sid, cid, semester)))
             System.out.println(" - Enrolment added successfully");
         else
             System.out.println(" - Enrolment of the same info already exists. Enrolment not added");
     }
 
     public static void deleteEnrolment() {
-        System.out.println();
+        System.out.println("\n------DELETE ENROLMENT------");
         List<StudentEnrolment> enrolments = manager.getEnrolments();
         int sz = enrolments.size();
-        int inp = -1;
 
         for (int i = 0; i < sz; i++)
             System.out.println((i + 1) + "/\n" + enrolments.get(i).toString());
 
-        do {
+        while (true) {
             System.out.print("Please enter the index of the enrolment you want to delete (0 to return): ");
-            try {
-                inp = scanner.nextInt();
+            int inp = validator.getValidatedIntChoice(0, sz);
             if (inp == 0)
                 return;
-            } catch (Exception ignored) {
-                continue;
-            }
-        } while (inp < 0 || inp > sz);
 
             manager.delete(inp - 1);
             System.out.println(" - Enrolment successfully removed");
         }
+
+    }
 
     public static void printGetOneMenu() {
         System.out.println("\n-------GET INFO-------");
@@ -157,6 +153,7 @@ public class Main {
     }
 
     public static void printAllInfo() {
+        System.out.println("\n------ALL INFO------");
         manager.getAll();
     }
 }
