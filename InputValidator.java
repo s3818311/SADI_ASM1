@@ -56,11 +56,11 @@ public class InputValidator {
         }
     }
 
-    public int getValidatedIntChoice(int max) {
-        int inp = 0;
+    public int getValidatedIntChoice(int min, int max) {
+        int inp = min - 1;
         try {
             inp = scanner.nextInt();
-            if (inp < 1 || inp > max)
+            if (inp < min || inp > max)
                 throw new InputMismatchException();
         } catch (InputMismatchException e) {
             System.out.printf("Please enter a number between 1 and %d\n", max);
@@ -69,6 +69,10 @@ public class InputValidator {
         }
 
         return inp;
+    }
+
+    public int getValidatedIntChoice(int max) {
+        return getValidatedIntChoice(1, max);
     }
 
 }
