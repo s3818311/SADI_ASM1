@@ -26,7 +26,15 @@ public class Student {
     }
 
     public boolean equals(Student other) {
-        return (this.id.equals(other.id));
+        return (this.id.equals(other.id) || this.id.equals(other.name));
+    }
+
+    public static Student parseCsvStr(String studentString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String[] data = studentString.split(",");
+        Date dob = dateFormat.parse(data[2]);
+
+        return new Student(data[0], data[1], dob);
     }
 
     @Override

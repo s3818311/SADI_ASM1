@@ -1,13 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EnrolmentManager implements StudentEnrolmentManager {
-    List<StudentEnrolment> studentEnrolments = new ArrayList<>();
-    List<String> studentIdsList = new ArrayList<>();
-    List<String> coursesIdsList = new ArrayList<>();
+    private List<StudentEnrolment> studentEnrolments = new ArrayList<>();
+    private List<Course> coursesList = new ArrayList<>();
+    private List<Student> studentList = new ArrayList<>();
 
     private EnrolmentManager() {
     };
@@ -21,28 +22,56 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return INSTANCE;
     }
 
-    public boolean populateFromFile(String fileName) {
-        Scanner scanner;
+    public boolean populateFromFiles(String enrolmentFileName, String courseFileName, String studentFileName) {
+        Scanner enrolmentScanner;
+        Scanner courseScanner;
+        Scanner studentScanner;
         try {
-            scanner = new Scanner(new File(fileName));
+            enrolmentScanner = new Scanner(new File(enrolmentFileName));
+            courseScanner = new Scanner(new File(courseFileName));
+            studentScanner = new Scanner(new File(studentFileName));
         } catch (FileNotFoundException e) {
-            System.out.println("File does not exist or cannot be found.");
+            System.out.println("Database file does not exist or cannot be found.");
             return false;
         }
-        scanner.nextLine();
 
-        while (scanner.hasNextLine()) {
-            StudentEnrolment enrolment = StudentEnrolment.parseCsvStr(scanner.nextLine());
-            studentEnrolments.add(enrolment);
-            studentIdsList.add(enrolment.getStudentId());
-            coursesIdsList.add(enrolment.getCourseId());
+        populateEnrolment(enrolmentScanner);
+        populateCourse(courseScanner);
+        try {
+            populateStudent(studentScanner);
+        } catch (ParseException ex) {
+            System.out.println("Error while parsing student database.");
+            return false;
         }
 
-        scanner.close();
+        enrolmentScanner.close();
+        courseScanner.close();
+        studentScanner.close();
 
         System.out.println("Database was successfully imported.");
 
         return true;
+    }
+
+    public void populateEnrolment(Scanner fileScanner) {
+        while (fileScanner.hasNextLine()) {
+            StudentEnrolment enrolment = StudentEnrolment.parseCsvStr(fileScanner.nextLine());
+            studentEnrolments.add(enrolment);
+        }
+    }
+
+    public void populateCourse(Scanner fileScanner) {
+        while (fileScanner.hasNextLine()) {
+            Course course = Course.parseCsvStr(fileScanner.nextLine());
+            coursesList.add(course);
+        }
+    }
+
+    public void populateStudent(Scanner fileScanner) throws ParseException {
+        while (fileScanner.hasNextLine()) {
+            Student enrolment = Student.parseCsvStr(fileScanner.nextLine());
+            studentList.add(enrolment);
+        }
     }
 
     @Override

@@ -24,8 +24,8 @@ public class StudentEnrolment {
         return semester;
     }
 
-    public static StudentEnrolment parseCsvStr(String studString) {
-        String[] data = studString.split(",");
+    public static StudentEnrolment parseCsvStr(String enrolString) {
+        String[] data = enrolString.split(",");
 
         return new StudentEnrolment(data[0], data[1], data[2]);
     }

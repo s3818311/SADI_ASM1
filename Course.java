@@ -22,7 +22,13 @@ public class Course {
     }
 
     public boolean equals(Course other) {
-        return (this.id.equals(other.id));
+        return (this.id.equals(other.id) || this.id.equals(other.name));
+    }
+
+    public static Course parseCsvStr(String courseString) {
+        String[] data = courseString.split(",");
+
+        return new Course(data[0], data[1], Integer.valueOf(data[2]));
     }
 
     @Override

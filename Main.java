@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -6,7 +7,13 @@ public class Main {
     private static EnrolmentManager manager = EnrolmentManager.getInstance();
     private static InputValidator validator = InputValidator.getInstance();
 
-    public static void printMenu() {
+    public static void printFileMenu() {
+        System.out.println("\n------DATABASE INPUT------");
+        System.out.println("1 Import custom database");
+        System.out.println("2 Use default sample database");
+    }
+
+    public static void printMainMenu() {
         System.out.println("\n------MAIN MENU------");
         System.out.println("1 List enrolments");
         System.out.println("2 Add enrolment");
@@ -18,26 +25,37 @@ public class Main {
         System.out.print("> ");
     };
 
-    public static void main(String[] args) {
+    public static void main() {
         boolean run = true;
-        if (args.length == 0)
-            run = manager.populateFromFile("sampleEnrolments.csv");
-        else
-            run = manager.populateFromFile(args[0]);
+        int inp = validator.getValidatedIntChoice(2);
+
+        if (inp == 1) {
+            System.out.print("> Enrolment file name: ");
+            String enrolmentFileName = scanner.nextLine();
+            System.out.print("> Course file name: ");
+            String courseFileName = scanner.nextLine();
+            System.out.print("> Student file name: ");
+            String studentFileName = scanner.nextLine();
+            run = manager.populateFromFiles(enrolmentFileName, courseFileName, studentFileName);
+        } else {
+            run = manager.populateFromFiles("sampleEnrolments.csv", "sampleCourses.csv", "sampleStudents.csv");
+        }
 
         while (run) {
-            printMenu();
+            printMainMenu();
 
-            int inp = validator.getValidatedIntChoice(7);
+            int inp2 = validator.getValidatedIntChoice(7);
 
-            switch (inp) {
+            switch (inp2) {
             case 1:
                 listEnrolments();
                 break;
             case 2:
                 addEnrolment();
                 break;
-
+            case 3:
+                updateEnrolment();
+                break;
             case 4:
                 deleteEnrolment();
                 break;
@@ -91,16 +109,16 @@ public class Main {
             System.out.print("Please enter the index of the enrolment you want to delete (0 to return): ");
             try {
                 inp = scanner.nextInt();
-                if (inp == 0)
-                    return;
+            if (inp == 0)
+                return;
             } catch (Exception ignored) {
                 continue;
             }
         } while (inp < 0 || inp > sz);
 
-        manager.delete(inp - 1);
-        System.out.println(" - Enrolment successfully removed");
-    }
+            manager.delete(inp - 1);
+            System.out.println(" - Enrolment successfully removed");
+        }
 
     public static void printGetOneMenu() {
         System.out.println("\n-------GET INFO-------");
