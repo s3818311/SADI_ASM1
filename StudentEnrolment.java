@@ -30,6 +30,10 @@ public class StudentEnrolment {
         return new StudentEnrolment(data[0], data[1], data[2]);
     }
 
+    public StudentEnrolment clone() {
+        return new StudentEnrolment(this.studentName, this.courseName, this.semester);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof StudentEnrolment) {

@@ -37,11 +37,14 @@ public class Student {
         return new Student(data[0], data[1], dob);
     }
 
+    public Student clone() {
+        return new Student(this.id, this.name, this.dob);
+    }
+
     @Override
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return String.format("Student id: %s\nStudent name: %s\nStudent date of birth: %s\n", id, name,
+        return String.format("|- Student id: %s\n|- Student name: %s\n|- Student date of birth: %s\n", id, name,
                 dateFormat.format(dob));
     }
-
 }

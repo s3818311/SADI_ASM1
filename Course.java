@@ -36,4 +36,8 @@ public class Course {
         return String.format("Course id: %s\nCourse name: %s\nNumber of credits: %d\n", id, name, credits);
     }
 
+    public Course clone() {
+        return new Course(this.id, this.name, this.credits);
+    }
+
 }
