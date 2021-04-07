@@ -4,8 +4,7 @@ import java.util.regex.Pattern;
 
 public class InputValidator {
     private Scanner scanner = Main.scanner;
-    private Pattern studentIdPattern = Pattern.compile("^\\d{7}$");
-    private Pattern courseIdPattern = Pattern.compile("^[A-Z]{4}\\d{4}$");
+    private EnrolmentManager manager = EnrolmentManager.getInstance();
     private Pattern semesterPattern = Pattern.compile("^\\d{4}[ABC]$");
 
     private InputValidator() {
@@ -20,34 +19,49 @@ public class InputValidator {
         return INSTANCE;
     }
 
-    public String getValidatedStudentId(String prompt) {
+    public String getValidatedStudentName(String prompt) {
         while (true) {
             System.out.print(prompt);
-            String sid = scanner.next();
-            if (sid.length() == 8 && sid.startsWith("s") && studentIdPattern.matcher(sid.substring(1)).matches()) {
-                return sid;
-            } else {
-                System.out.println("Please enter the student ID in the correct format.");
+            String name = scanner.nextLine();
+            boolean exist = false;
+            for (Student student : manager.getStudents()) {
+                if (student.getName().equals(name)) {
+                    exist = true;
+                    break;
+                }
             }
+
+            if (exist)
+                return name;
+            else
+                System.out.printf("No student with the name %s found in the database.\n", name);
         }
     }
 
-    public String getValidatedCourseId(String prompt) {
+    public String getValidatedCourseName(String prompt) {
         while (true) {
             System.out.print(prompt);
-            String cid = scanner.next();
-            if (cid.length() == 8 && courseIdPattern.matcher(cid).matches()) {
-                return cid;
-            } else {
-                System.out.println("Please enter the course ID in the correct format.");
+            String name = scanner.nextLine();
+            boolean exist = false;
+            for (Course course : manager.getCourses()) {
+                if (course.getName().equals(name)) {
+                    exist = true;
+                    break;
+                }
             }
+
+            if (exist)
+                return name;
+            else
+                System.out.printf("No course with the name %s found in the database.\n", name);
         }
+
     }
 
     public String getValidatedSemester(String prompt) {
         while (true) {
             System.out.print(prompt);
-            String semester = scanner.next();
+            String semester = scanner.nextLine();
             if (semester.length() == 5 && semesterPattern.matcher(semester).matches()) {
                 return semester;
             } else {
