@@ -74,6 +74,7 @@ public class InputValidator {
         int inp = min - 1;
         try {
             inp = scanner.nextInt();
+            scanner.nextLine();
             if (inp < min || inp > max)
                 throw new InputMismatchException();
         } catch (InputMismatchException e) {
