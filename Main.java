@@ -11,6 +11,7 @@ public class Main {
         System.out.println("\n------DATABASE INPUT------");
         System.out.println("1 Import custom database");
         System.out.println("2 Use default sample database");
+        System.out.print("> ");
     }
 
     public static void printMainMenu() {
@@ -19,15 +20,18 @@ public class Main {
         System.out.println("2 Add enrolment");
         System.out.println("3 Update enrolment");
         System.out.println("4 Delete enrolment");
-        System.out.println("5 Get info");
-        System.out.println("6 Print all information");
-        System.out.println("7 Quit");
+        System.out.println("5 Get all courses from a student in a semester");
+        System.out.println("6 Get all students from a course in a semester");
+        System.out.println("7 Get all courses offered in a semester");
+        System.out.println("8 Quit");
         System.out.print("> ");
     };
 
-    public static void main() {
-        boolean run = true;
+    public static void main(String[] args) {
+        printFileMenu();
         int inp = validator.getValidatedIntChoice(2);
+
+        boolean run = true;
 
         if (inp == 1) {
             System.out.print("> Enrolment file name: ");
@@ -44,7 +48,8 @@ public class Main {
         while (run) {
             printMainMenu();
 
-            int inp2 = validator.getValidatedIntChoice(7);
+            int inp2 = validator.getValidatedIntChoice(8);
+            String sid, cid, semester;
 
             switch (inp2) {
             case 1:
@@ -60,12 +65,20 @@ public class Main {
                 deleteEnrolment();
                 break;
             case 5:
-                getInfo();
+                sid = validator.getValidatedStudentName("Please enter the student id: ");
+                semester = validator.getValidatedSemester("Please enter the semester: ");
+                manager.printCoursesPerStudentPerSemester(sid, semester);
                 break;
             case 6:
-                printAllInfo();
+                cid = validator.getValidatedCourseName("Please enter the course id: ");
+                semester = validator.getValidatedSemester("Please enter the semester: ");
+                manager.printCoursesPerStudentPerSemester(cid, semester);
                 break;
             case 7:
+                semester = validator.getValidatedSemester("Please enter the semester: ");
+                manager.printCoursesOfferedPerSemester(semester);
+                break;
+            case 8:
                 run = false;
             }
         }
@@ -78,7 +91,7 @@ public class Main {
 
     public static void listEnrolments() {
         System.out.println();
-        List<StudentEnrolment> enrolments = manager.getEnrolments();
+        List<StudentEnrolment> enrolments = manager.getAll();
         for (StudentEnrolment studentEnrolment : enrolments) {
             System.out.println(studentEnrolment);
         }
@@ -86,19 +99,73 @@ public class Main {
 
     public static void addEnrolment() {
         System.out.println("\n------ADD ENROLMENT------");
-        String sid = validator.getValidatedStudentId("Student Id: ");
-        String cid = validator.getValidatedCourseId("Course Id: ");
+        String sname = validator.getValidatedStudentName("Student name: ");
+        String cname = validator.getValidatedCourseName("Course name: ");
         String semester = validator.getValidatedSemester("Semester: ");
 
-        if (manager.add(new StudentEnrolment(sid, cid, semester)))
+        if (manager.add(new StudentEnrolment(sname, cname, semester)))
             System.out.println(" - Enrolment added successfully");
         else
-            System.out.println(" - Enrolment of the same info already exists. Enrolment not added");
+            System.out.println(" - Enrolment of the same info already exists. Enrolment not added.");
+    }
+
+    public static void updateEnrolment() {
+        System.out.println("\n------UPDATE ENROLMENT------");
+        String sid = validator.getValidatedStudentName("Please enter the student name you want to update: ");
+        String semester = validator.getValidatedSemester("Please enter the semester you want to update: ");
+
+        ArrayList<StudentEnrolment> temp = new ArrayList<>();
+        for (StudentEnrolment enrolment : manager.getAll())
+            if (enrolment.getStudentName().equals(sid) && enrolment.getSemester().equals(semester))
+                temp.add(enrolment);
+
+        System.out.printf("%s's courses in semester %s:\n", sid, semester);
+        for (StudentEnrolment enrolment : temp)
+            System.out.printf(" |- %s\n", enrolment.getCourseName());
+
+        if (temp.isEmpty()) {
+            System.out.printf("No enrolment with %s and enrols in semester %s is found\n", sid, semester);
+            return;
+        }
+
+        boolean run = true, err = false;
+        while (run) {
+
+            System.out.printf("1 Add a course to this list\n2 Delete a course from this list\n3 Return\n> ");
+
+            int opt = validator.getValidatedIntChoice(3);
+
+            if (opt == 3)
+                return;
+
+            String cid = validator.getValidatedCourseName("Course name: ");
+
+            if (opt == 1) {
+                for (StudentEnrolment enrolment : temp)
+                    if (enrolment.getCourseName().equals(cid)) {
+                        System.out.println("Course already exist in the list");
+                        err = true;
+                    }
+            } else if (opt == 2) {
+                boolean exist = false;
+                for (StudentEnrolment enrolment : temp)
+                    if (enrolment.getCourseName().equals(cid)) {
+                        exist = true;
+                    }
+                if (!exist) {
+                    System.out.println("Course does not exist in the list");
+                    err = true;
+                }
+            }
+
+            if (!err)
+                manager.update(opt, sid, cid, semester);
+        }
     }
 
     public static void deleteEnrolment() {
         System.out.println("\n------DELETE ENROLMENT------");
-        List<StudentEnrolment> enrolments = manager.getEnrolments();
+        List<StudentEnrolment> enrolments = manager.getAll();
         int sz = enrolments.size();
 
         for (int i = 0; i < sz; i++)
@@ -125,35 +192,8 @@ public class Main {
         System.out.print("> ");
     }
 
-    public static void getInfo() {
-        boolean run = true;
-
-        while (run) {
-            printGetOneMenu();
-
-            int inp = validator.getValidatedIntChoice(4);
-
-            String semester = validator.getValidatedSemester("Please enter the semester: ");
-
-            switch (inp) {
-            case 1:
-                String sid = validator.getValidatedStudentId("Please enter the student id: ");
-                manager.getOne(inp, sid, semester);
-                break;
-            case 2:
-                String cid = validator.getValidatedCourseId("Please enter the course id: ");
-                manager.getOne(inp, cid, semester);
-                break;
-            case 3:
-                manager.getOne(inp, null, semester);
-            case 4:
-                run = false;
-            }
-        }
-    }
-
     public static void printAllInfo() {
-        System.out.println("\n------ALL INFO------");
+        System.out.println("\n------ALL INFO------\n");
         manager.getAll();
     }
 }

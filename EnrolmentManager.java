@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class EnrolmentManager implements StudentEnrolmentManager {
     private List<StudentEnrolment> studentEnrolments = new ArrayList<>();
     private List<Course> coursesList = new ArrayList<>();
-    private List<Student> studentList = new ArrayList<>();
+    private List<Student> studentsList = new ArrayList<>();
 
     private EnrolmentManager() {
     };
@@ -69,8 +69,8 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     public void populateStudent(Scanner fileScanner) throws ParseException {
         while (fileScanner.hasNextLine()) {
-            Student enrolment = Student.parseCsvStr(fileScanner.nextLine());
-            studentList.add(enrolment);
+            Student student = Student.parseCsvStr(fileScanner.nextLine());
+            studentsList.add(student);
         }
     }
 
@@ -85,9 +85,16 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     @Override
-    public boolean update(StudentEnrolment studentEnrolment) {
-
-        return false;
+    public void update(int opt, String sid, String cid, String semester) {
+        StudentEnrolment temp = new StudentEnrolment(sid, cid, semester);
+        if (opt == 1)
+            studentEnrolments.add(temp);
+        else
+            for (StudentEnrolment enrolment : studentEnrolments)
+                if (enrolment.equals(temp)) {
+                    studentEnrolments.remove(enrolment);
+                    break;
+                }
     }
 
     @Override
@@ -96,54 +103,56 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     @Override
-    public void getOne(int opt, String id, String semester) {
-        if (opt == 1) {
-            System.out.format("%s's courses in semester %s:\n", id, semester);
-            for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.getStudentId().equals(id) && enrolment.getSemester().equals(semester))
-                    System.out.printf(" |- %s\n", enrolment.getCourseId());
-        } else if (opt == 2) {
-            System.out.format("Students enrolling in %s for semester %s:\n", id, semester);
-            for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.getCourseId().equals(id) && enrolment.getSemester().equals(semester))
-                    System.out.printf(" |- %s\n", enrolment.getStudentId());
-        } else {
-            System.out.printf("Courses offered in semester %s:\n", semester);
-            for (StudentEnrolment enrolment : studentEnrolments) {
-                if (enrolment.getSemester().equals(semester))
-                    System.out.printf(" |- %s\n", enrolment.getCourseId());
-            }
-        }
-
+    public StudentEnrolment getOne() {
+        return null;
     }
 
     @Override
-    public void getAll() {
-        System.out.println("Student enrolments:");
-        for (StudentEnrolment enrolment : studentEnrolments) {
-            System.out.println("--------------------");
-            System.out.println(enrolment);
-        }
+    public List<StudentEnrolment> getAll() {
+        List<StudentEnrolment> copy = new ArrayList<>();
+        for (StudentEnrolment enrolment : studentEnrolments)
+            copy.add(enrolment.clone());
 
-        System.out.println("\nStudents: ");
-        for (String sid : studentIdsList) {
-            System.out.println("|-" + sid);
-        }
-
-        System.out.println("\nCourses: ");
-        for (String cid : coursesIdsList) {
-            System.out.println("|-" + cid);
-        }
+        return copy;
     }
 
     protected void finalize() {
 
     }
 
-    protected List<StudentEnrolment> getEnrolments() {
-        List<StudentEnrolment> copy = new ArrayList<>();
+    protected void printCoursesPerStudentPerSemester(String sid, String semester) {
+        System.out.format("%s's courses in semester %s:\n", sid, semester);
         for (StudentEnrolment enrolment : studentEnrolments)
-            copy.add(enrolment.clone());
+            if (enrolment.getStudentName().equals(sid) && enrolment.getSemester().equals(semester))
+                System.out.printf(" |- %s\n", enrolment.getCourseName());
+    }
+
+    protected void printStudentsPerCoursePerSemester(String cid, String semester) {
+        System.out.format("Students enrolling in %s for semester %s:\n", cid, semester);
+        for (StudentEnrolment enrolment : studentEnrolments)
+            if (enrolment.getCourseName().equals(cid) && enrolment.getSemester().equals(semester))
+                System.out.printf(" |- %s\n", enrolment.getStudentName());
+    }
+
+    protected void printCoursesOfferedPerSemester(String semester) {
+        System.out.printf("Courses offered in semester %s:\n", semester);
+        for (StudentEnrolment enrolment : studentEnrolments)
+            if (enrolment.getSemester().equals(semester))
+                System.out.printf(" |- %s\n", enrolment.getCourseName());
+    }
+
+    protected List<Student> getStudents() {
+        List<Student> copy = new ArrayList<>();
+        for (Student student : studentsList)
+            copy.add(student.clone());
+
+        return copy;
+    }
+
+    protected List<Course> getCourses() {
+        List<Course> copy = new ArrayList<>();
+        for (Course course : coursesList)
+            copy.add(course.clone());
 
         return copy;
     }

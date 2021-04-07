@@ -1,11 +1,13 @@
+import java.util.List;
+
 public interface StudentEnrolmentManager {
     public boolean add(StudentEnrolment studentEnrolment);
 
-    public boolean update(StudentEnrolment studentEnrolment);
+    public void update(int opt, String sid, String cid, String semester);
 
     public void delete(int index);
 
-    public void getOne(int opt, String id, String semester);
+    public StudentEnrolment getOne();
 
-    public void getAll();
+    public List<StudentEnrolment> getAll();
 }
