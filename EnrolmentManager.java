@@ -2,13 +2,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class EnrolmentManager implements StudentEnrolmentManager {
-    private List<StudentEnrolment> studentEnrolments = new ArrayList<>();
-    private List<Course> coursesList = new ArrayList<>();
-    private List<Student> studentsList = new ArrayList<>();
+    private Set<StudentEnrolment> studentEnrolments = new LinkedHashSet<>();
+    private Set<Course> coursesList = new LinkedHashSet<>();
+    private Set<Student> studentsList = new LinkedHashSet<>();
 
     private EnrolmentManager() {
     };
@@ -94,7 +98,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
                 if (enrolment.equals(temp)) {
                     studentEnrolments.remove(enrolment);
                     break;
-                }
+        }
     }
 
     @Override
@@ -125,7 +129,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         for (StudentEnrolment enrolment : studentEnrolments)
             if (enrolment.getStudentName().equals(sid) && enrolment.getSemester().equals(semester))
                 System.out.printf(" |- %s\n", enrolment.getCourseName());
-    }
+            }
 
     protected void printStudentsPerCoursePerSemester(String cid, String semester) {
         System.out.format("Students enrolling in %s for semester %s:\n", cid, semester);
