@@ -137,7 +137,7 @@ public class Main {
         int sz = enrolments.size();
 
         for (int i = 0; i < sz; i++)
-            System.out.println((i + 1) + "/\n" + enrolments.get(i).toString());
+            System.out.println((i + 1) + "/\n" + enrolments.get(i));
 
         while (true) {
             System.out.print("Please enter the index of the enrolment you want to delete (0 to return): ");
@@ -149,15 +149,6 @@ public class Main {
             System.out.println(" - Enrolment successfully removed");
         }
 
-    }
-
-    public static void printGetOneMenu() {
-        System.out.println("\n-------GET INFO-------");
-        System.out.println("1 Get all courses from a student in a semester");
-        System.out.println("2 Get all students from a course in a semester");
-        System.out.println("3 Get all courses offered in a semester");
-        System.out.println("4 Back");
-        System.out.print("> ");
     }
 
     public static void printAllInfo() {
