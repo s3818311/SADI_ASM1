@@ -65,14 +65,14 @@ public class Main {
                 deleteEnrolment();
                 break;
             case 5:
-                sid = validator.getValidatedStudentName("Please enter the student id: ");
+                sid = validator.getValidatedStudentName("Please enter the student name: ");
                 semester = validator.getValidatedSemester("Please enter the semester: ");
                 manager.printCoursesPerStudentPerSemester(sid, semester);
                 break;
             case 6:
-                cid = validator.getValidatedCourseName("Please enter the course id: ");
+                cid = validator.getValidatedCourseName("Please enter the course name: ");
                 semester = validator.getValidatedSemester("Please enter the semester: ");
-                manager.printCoursesPerStudentPerSemester(cid, semester);
+                manager.printStudentsPerCoursePerSemester(cid, semester);
                 break;
             case 7:
                 semester = validator.getValidatedSemester("Please enter the semester: ");
@@ -93,6 +93,7 @@ public class Main {
         System.out.println();
         List<StudentEnrolment> enrolments = manager.getAll();
         for (StudentEnrolment studentEnrolment : enrolments) {
+            System.out.println("------------------------------");
             System.out.println(studentEnrolment);
         }
     }
@@ -159,7 +160,7 @@ public class Main {
             }
 
             if (!err)
-                manager.update(opt, sid, cid, semester);
+            manager.update(opt, sid, cid, semester);
         }
     }
 
