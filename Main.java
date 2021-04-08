@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -83,7 +84,12 @@ public class Main {
             }
         }
 
-        manager.finalize();
+        try {
+            manager.finalize();
+        } catch (IOException ex) {
+            System.out.println("An exception occurred: " + ex.getMessage());
+            System.out.println("Changes made have not been saved!");
+        }
         scanner.close();
 
         System.out.println("Ending program...");

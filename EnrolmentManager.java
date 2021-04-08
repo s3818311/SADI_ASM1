@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,11 +10,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.StringJoiner;
 
 public class EnrolmentManager implements StudentEnrolmentManager {
     private Set<StudentEnrolment> studentEnrolments = new LinkedHashSet<>();
     private Set<Course> coursesList = new LinkedHashSet<>();
     private Set<Student> studentsList = new LinkedHashSet<>();
+
+    private String enrolmentFileName = "sampleEnrolments.csv";
+    private File enrolmentFile;
 
     private EnrolmentManager() {
     };
@@ -27,11 +33,14 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     public boolean populateFromFiles(String enrolmentFileName, String courseFileName, String studentFileName) {
+        this.enrolmentFileName = enrolmentFileName;
+        this.enrolmentFile = new File(enrolmentFileName);
+
         Scanner enrolmentScanner;
         Scanner courseScanner;
         Scanner studentScanner;
         try {
-            enrolmentScanner = new Scanner(new File(enrolmentFileName));
+            enrolmentScanner = new Scanner(enrolmentFile);
             courseScanner = new Scanner(new File(courseFileName));
             studentScanner = new Scanner(new File(studentFileName));
         } catch (FileNotFoundException e) {
@@ -110,7 +119,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         Iterator<StudentEnrolment> iter = studentEnrolments.iterator();
         for (int i = 0; i <= index; i++) {
             iter.next();
-    }
+        }
         iter.remove();
     }
 
@@ -128,7 +137,26 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return copy;
     }
 
-    protected void finalize() {
+    protected void finalize() throws IOException {
+        File newFile = new File("_" + enrolmentFileName);
+
+        ArrayList<String> data = new ArrayList<>();
+        for (StudentEnrolment enrolment : studentEnrolments) {
+            StringJoiner s = new StringJoiner(",");
+            s.add(enrolment.getStudentName());
+            s.add(enrolment.getCourseName());
+            s.add(enrolment.getSemester());
+
+            data.add(s.toString() + '\n');
+        }
+
+        FileWriter fileWriter = new FileWriter(newFile);
+        for (String s : data)
+            fileWriter.append(s);
+        fileWriter.close();
+
+        if (!(enrolmentFile.delete() && newFile.renameTo(enrolmentFile)))
+            throw new IOException("Files deletion or renaming failed");
 
     }
 
