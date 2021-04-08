@@ -115,22 +115,8 @@ public class Main {
         String sid = validator.getValidatedStudentName("Please enter the student name you want to update: ");
         String semester = validator.getValidatedSemester("Please enter the semester you want to update: ");
 
-        ArrayList<StudentEnrolment> temp = new ArrayList<>();
-        for (StudentEnrolment enrolment : manager.getAll())
-            if (enrolment.getStudentName().equals(sid) && enrolment.getSemester().equals(semester))
-                temp.add(enrolment);
-
-        System.out.printf("%s's courses in semester %s:\n", sid, semester);
-        for (StudentEnrolment enrolment : temp)
-            System.out.printf(" |- %s\n", enrolment.getCourseName());
-
-        if (temp.isEmpty()) {
-            System.out.printf("No enrolment with %s and enrols in semester %s is found\n", sid, semester);
-            return;
-        }
-
-        boolean run = true, err = false;
-        while (run) {
+        while (true) {
+            manager.printCoursesPerStudentPerSemester(sid, semester);
 
             System.out.printf("1 Add a course to this list\n2 Delete a course from this list\n3 Return\n> ");
 
@@ -141,25 +127,6 @@ public class Main {
 
             String cid = validator.getValidatedCourseName("Course name: ");
 
-            if (opt == 1) {
-                for (StudentEnrolment enrolment : temp)
-                    if (enrolment.getCourseName().equals(cid)) {
-                        System.out.println("Course already exist in the list");
-                        err = true;
-                    }
-            } else if (opt == 2) {
-                boolean exist = false;
-                for (StudentEnrolment enrolment : temp)
-                    if (enrolment.getCourseName().equals(cid)) {
-                        exist = true;
-                    }
-                if (!exist) {
-                    System.out.println("Course does not exist in the list");
-                    err = true;
-                }
-            }
-
-            if (!err)
             manager.update(opt, sid, cid, semester);
         }
     }

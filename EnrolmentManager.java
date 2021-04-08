@@ -91,13 +91,17 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     @Override
     public void update(int opt, String sid, String cid, String semester) {
         StudentEnrolment temp = new StudentEnrolment(sid, cid, semester);
-        if (opt == 1)
-            studentEnrolments.add(temp);
-        else
+        if (opt == 1) {
+            if (!studentEnrolments.add(temp)) {
+                System.out.println("Course already exist in the list.");
+            }
+        } else {
             for (StudentEnrolment enrolment : studentEnrolments)
                 if (enrolment.equals(temp)) {
                     studentEnrolments.remove(enrolment);
-                    break;
+                    return;
+                }
+            System.out.println("Course does not exist in the list.");
         }
     }
 
@@ -124,25 +128,48 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     }
 
-    protected void printCoursesPerStudentPerSemester(String sid, String semester) {
-        System.out.format("%s's courses in semester %s:\n", sid, semester);
+    protected void printCoursesPerStudentPerSemester(String name, String semester) {
+        boolean empty = true;
+        System.out.format("%s's courses in semester %s:\n", name, semester);
         for (StudentEnrolment enrolment : studentEnrolments)
-            if (enrolment.getStudentName().equals(sid) && enrolment.getSemester().equals(semester))
+            if (enrolment.getStudentName().equals(name) && enrolment.getSemester().equals(semester)) {
                 System.out.printf(" |- %s\n", enrolment.getCourseName());
+                empty = false;
             }
 
-    protected void printStudentsPerCoursePerSemester(String cid, String semester) {
-        System.out.format("Students enrolling in %s for semester %s:\n", cid, semester);
+        if (empty) {
+            System.out.printf("No courses for %s in semester %s found.\n", name, semester);
+        }
+    }
+
+    protected void printStudentsPerCoursePerSemester(String name, String semester) {
+        boolean empty = true;
+        System.out.format("Students enrolling in %s for semester %s:\n", name, semester);
         for (StudentEnrolment enrolment : studentEnrolments)
-            if (enrolment.getCourseName().equals(cid) && enrolment.getSemester().equals(semester))
+            if (enrolment.getCourseName().equals(name) && enrolment.getSemester().equals(semester)) {
                 System.out.printf(" |- %s\n", enrolment.getStudentName());
+                empty = false;
+            }
+
+        if (empty) {
+            System.out.printf("No students enrolled in %s for semester %s found.\n", name, semester);
+        }
     }
 
     protected void printCoursesOfferedPerSemester(String semester) {
+        Set<String> temp = new HashSet<>();
         System.out.printf("Courses offered in semester %s:\n", semester);
-        for (StudentEnrolment enrolment : studentEnrolments)
-            if (enrolment.getSemester().equals(semester))
-                System.out.printf(" |- %s\n", enrolment.getCourseName());
+        for (StudentEnrolment enrolment : studentEnrolments) {
+            String cname = enrolment.getCourseName();
+            if (enrolment.getSemester().equals(semester) && !temp.contains(cname)) {
+                System.out.printf(" |- %s\n", cname);
+                temp.add(cname);
+            }
+        }
+
+        if (temp.isEmpty()) {
+            System.out.printf("No courses currently offered for semester %s\n", semester);
+        }
     }
 
     protected List<Student> getStudents() {
