@@ -107,7 +107,11 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     @Override
     public void delete(int index) {
-        studentEnrolments.remove(index);
+        Iterator<StudentEnrolment> iter = studentEnrolments.iterator();
+        for (int i = 0; i <= index; i++) {
+            iter.next();
+    }
+        iter.remove();
     }
 
     @Override
