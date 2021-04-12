@@ -160,7 +160,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     protected void printCoursesPerStudentPerSemester(String name, String semester) {
         boolean empty = true;
-        System.out.format("%s's courses in semester %s:\n", name, semester);
+        System.out.printf("\n%s's courses in semester %s:\n", name, semester);
         for (StudentEnrolment enrolment : studentEnrolments)
             if (enrolment.getStudentName().equals(name) && enrolment.getSemester().equals(semester)) {
                 System.out.printf(" |- %s\n", enrolment.getCourseName());
@@ -168,13 +168,13 @@ public class EnrolmentManager implements StudentEnrolmentManager {
             }
 
         if (empty) {
-            System.out.printf("No courses for %s in semester %s found.\n", name, semester);
+            System.out.printf("\nNo courses for %s in semester %s found.\n", name, semester);
         }
     }
 
     protected void printStudentsPerCoursePerSemester(String name, String semester) {
         boolean empty = true;
-        System.out.format("Students enrolling in %s for semester %s:\n", name, semester);
+        System.out.printf("\nStudents enrolling in %s for semester %s:\n", name, semester);
         for (StudentEnrolment enrolment : studentEnrolments)
             if (enrolment.getCourseName().equals(name) && enrolment.getSemester().equals(semester)) {
                 System.out.printf(" |- %s\n", enrolment.getStudentName());
@@ -188,7 +188,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     protected void printCoursesOfferedPerSemester(String semester) {
         Set<String> temp = new HashSet<>();
-        System.out.printf("Courses offered in semester %s:\n", semester);
+        System.out.printf("\nCourses offered in semester %s:\n", semester);
         for (StudentEnrolment enrolment : studentEnrolments) {
             String cname = enrolment.getCourseName();
             if (enrolment.getSemester().equals(semester) && !temp.contains(cname)) {
