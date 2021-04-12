@@ -7,6 +7,9 @@ public class Student {
     private String name;
     private Date dob;
 
+    public Student() {
+    }
+
     public Student(String id, String name, Date dob) {
         this.id = id;
         this.name = name;

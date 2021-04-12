@@ -34,7 +34,7 @@ public class InputValidator {
             if (exist)
                 return name;
             else
-                System.out.printf("No student with the name %s found in the database.\n", name);
+                System.out.printf("No student with the name '%s' found in the database.\n", name);
         }
     }
 
@@ -53,7 +53,7 @@ public class InputValidator {
             if (exist)
                 return name;
             else
-                System.out.printf("No course with the name %s found in the database.\n", name);
+                System.out.printf("No course with the name '%s' found in the database.\n", name);
         }
 
     }

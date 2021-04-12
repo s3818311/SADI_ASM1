@@ -36,6 +36,50 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return new EnrolmentManager();
     }
 
+    @Override
+    public boolean add(StudentEnrolment studentEnrolment) {
+        return studentEnrolments.add(studentEnrolment);
+    }
+
+    @Override
+    public void update(int opt, String sname, String cname, String semester) {
+        StudentEnrolment temp = new StudentEnrolment(sname, cname, semester);
+        if (opt == 1) {
+            if (!add(temp))
+                System.out.println("Course already exist in the list.");
+        } else {
+            for (StudentEnrolment enrolment : studentEnrolments)
+                if (enrolment.equals(temp)) {
+                    studentEnrolments.remove(enrolment);
+                    return;
+                }
+            System.out.println("Course does not exist in the list.");
+        }
+    }
+
+    @Override
+    public void delete(int index) {
+        Iterator<StudentEnrolment> iter = studentEnrolments.iterator();
+        for (int i = 0; i <= index; i++) {
+            iter.next();
+        }
+        iter.remove();
+    }
+
+    @Override
+    public StudentEnrolment getOne() {
+        return null;
+    }
+
+    @Override
+    public List<StudentEnrolment> getAll() {
+        List<StudentEnrolment> copy = new ArrayList<>();
+        for (StudentEnrolment enrolment : studentEnrolments)
+            copy.add(enrolment.clone());
+
+        return copy;
+    }
+
     public boolean populateFromFiles(String enrolmentFileName, String courseFileName, String studentFileName) {
         this.enrolmentFileName = enrolmentFileName;
         this.enrolmentFile = new File(enrolmentFileName);
@@ -89,50 +133,6 @@ public class EnrolmentManager implements StudentEnrolmentManager {
             Student student = Student.parseCsvStr(fileScanner.nextLine());
             studentsList.add(student);
         }
-    }
-
-    @Override
-    public boolean add(StudentEnrolment studentEnrolment) {
-        return studentEnrolments.add(studentEnrolment);
-    }
-
-    @Override
-    public void update(int opt, String sname, String cname, String semester) {
-        StudentEnrolment temp = new StudentEnrolment(sname, cname, semester);
-        if (opt == 1) {
-            if (!add(temp))
-                System.out.println("Course already exist in the list.");
-        } else {
-            for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.equals(temp)) {
-                    studentEnrolments.remove(enrolment);
-                    return;
-                }
-            System.out.println("Course does not exist in the list.");
-        }
-    }
-
-    @Override
-    public void delete(int index) {
-        Iterator<StudentEnrolment> iter = studentEnrolments.iterator();
-        for (int i = 0; i <= index; i++) {
-            iter.next();
-        }
-        iter.remove();
-    }
-
-    @Override
-    public StudentEnrolment getOne() {
-        return null;
-    }
-
-    @Override
-    public List<StudentEnrolment> getAll() {
-        List<StudentEnrolment> copy = new ArrayList<>();
-        for (StudentEnrolment enrolment : studentEnrolments)
-            copy.add(enrolment.clone());
-
-        return copy;
     }
 
     protected void finalize() throws IOException {

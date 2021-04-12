@@ -3,6 +3,9 @@ public class Course {
     private String name;
     private int credits;
 
+    public Course() {
+    }
+
     public Course(String id, String name, int credits) {
         this.id = id;
         this.name = name;
@@ -33,7 +36,7 @@ public class Course {
 
     @Override
     public String toString() {
-        return String.format("Course id: %s\nCourse name: %s\nNumber of credits: %d\n", id, name, credits);
+        return String.format("|- Course id: %s\n|- Course name: %s\n|- Number of credits: %d\n", id, name, credits);
     }
 
     public Course clone() {
