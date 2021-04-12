@@ -32,6 +32,10 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return INSTANCE;
     }
 
+    protected static EnrolmentManager getTestInstance() {
+        return new EnrolmentManager();
+    }
+
     public boolean populateFromFiles(String enrolmentFileName, String courseFileName, String studentFileName) {
         this.enrolmentFileName = enrolmentFileName;
         this.enrolmentFile = new File(enrolmentFileName);
