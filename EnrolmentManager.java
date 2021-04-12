@@ -93,21 +93,15 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     @Override
     public boolean add(StudentEnrolment studentEnrolment) {
-        if (studentEnrolments.contains(studentEnrolment))
-            return false;
-
-        studentEnrolments.add(studentEnrolment);
-        return true;
-
+        return studentEnrolments.add(studentEnrolment);
     }
 
     @Override
-    public void update(int opt, String sid, String cid, String semester) {
-        StudentEnrolment temp = new StudentEnrolment(sid, cid, semester);
+    public void update(int opt, String sname, String cname, String semester) {
+        StudentEnrolment temp = new StudentEnrolment(sname, cname, semester);
         if (opt == 1) {
-            if (!studentEnrolments.add(temp)) {
+            if (!add(temp))
                 System.out.println("Course already exist in the list.");
-            }
         } else {
             for (StudentEnrolment enrolment : studentEnrolments)
                 if (enrolment.equals(temp)) {
