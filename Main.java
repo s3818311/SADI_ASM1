@@ -13,10 +13,10 @@ public class Main {
         String mainMenu = "\n------MAIN MENU------" + "\n1 List enrolments" + "\n2 Add enrolment"
                 + "\n3 Update enrolment" + "\n4 Delete enrolment" + "\n5 Get all courses from a student in a semester"
                 + "\n6 Get all students from a course in a semester" + "\n7 Get all courses offered in a semester"
-                + "\n8 Quit" + "\n> ";
+                + "\n8 Print all students information" + "\n9 Print all courses information" + "\n10 Quit" + "\n> ";
 
         while (run) {
-            int inp = validator.getValidatedIntChoice(mainMenu, 8);
+            int inp = validator.getValidatedIntChoice(mainMenu, 10);
             String sid, cid, semester;
 
             switch (inp) {
@@ -47,6 +47,12 @@ public class Main {
                 manager.printCoursesOfferedPerSemester(semester);
                 break;
             case 8:
+                printAllStudents();
+                break;
+            case 9:
+                printAllCourses();
+                break;
+            case 10:
                 run = false;
             }
         }
@@ -143,11 +149,28 @@ public class Main {
             manager.delete(inp - 1);
             System.out.println(" - Enrolment successfully removed");
         }
-
     }
 
-    public static void printAllInfo() {
-        System.out.println("\n------ALL INFO------\n");
-        manager.getAll();
+    public static void printAllStudents() {
+        System.out.println("\n------STUDENTS INFO------");
+        List<Student> students = manager.getStudents();
+
+        for (Student student : students) {
+            System.out.println("\n------------------------------");
+            System.out.print(student);
+            System.out.println("------------------------------");
+        }
+    }
+
+    public static void printAllCourses() {
+        System.out.println("\n------COURSES INFO------");
+        List<Course> courses = manager.getCourses();
+
+        for (Course course : courses) {
+            System.out.println("\n------------------------------");
+            System.out.print(course);
+            System.out.println("------------------------------");
+        }
+
     }
 }
