@@ -45,6 +45,11 @@ public class StudentEnrolment {
     }
 
     @Override
+    public int hashCode() {
+        return (this.studentName.hashCode() + this.courseName.hashCode() + this.semester.hashCode()) * 4597;
+    }
+
+    @Override
     public String toString() {
         return String.format("Student name: %s\nCourse name: %s\nSemester: %s", studentName, courseName, semester);
     }
