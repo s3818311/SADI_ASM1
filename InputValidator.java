@@ -70,24 +70,26 @@ public class InputValidator {
         }
     }
 
-    public int getValidatedIntChoice(int min, int max) {
+    public int getValidatedIntChoice(String prompt, int min, int max) {
         int inp = min - 1;
-        try {
-            inp = scanner.nextInt();
-            scanner.nextLine();
-            if (inp < min || inp > max)
-                throw new InputMismatchException();
-        } catch (InputMismatchException e) {
-            System.out.printf("Please enter a number between 1 and %d\n", max);
-            scanner.next();
-            return 0;
+        while (inp < min || inp > max) {
+            System.out.printf(prompt);
+            try {
+                inp = scanner.nextInt();
+                if (inp < min || inp > max)
+                    throw new InputMismatchException();
+            } catch (InputMismatchException e) {
+                System.out.printf("Please enter a number between 1 and %d\n", max);
+                scanner.nextLine();
+            }
         }
 
+        scanner.nextLine();
         return inp;
     }
 
-    public int getValidatedIntChoice(int max) {
-        return getValidatedIntChoice(1, max);
+    public int getValidatedIntChoice(String prompt, int max) {
+        return getValidatedIntChoice(prompt, 1, max);
     }
 
 }

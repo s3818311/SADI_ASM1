@@ -7,51 +7,19 @@ public class Main {
     private static EnrolmentManager manager = EnrolmentManager.getInstance();
     private static InputValidator validator = InputValidator.getInstance();
 
-    public static void printFileMenu() {
-        System.out.println("\n------DATABASE INPUT------");
-        System.out.println("1 Import custom database");
-        System.out.println("2 Use default sample database");
-        System.out.print("> ");
-    }
-
-    public static void printMainMenu() {
-        System.out.println("\n------MAIN MENU------");
-        System.out.println("1 List enrolments");
-        System.out.println("2 Add enrolment");
-        System.out.println("3 Update enrolment");
-        System.out.println("4 Delete enrolment");
-        System.out.println("5 Get all courses from a student in a semester");
-        System.out.println("6 Get all students from a course in a semester");
-        System.out.println("7 Get all courses offered in a semester");
-        System.out.println("8 Quit");
-        System.out.print("> ");
-    };
-
     public static void main(String[] args) {
-        printFileMenu();
-        int inp = validator.getValidatedIntChoice(2);
+        boolean run = dbSelect();
 
-        boolean run = true;
-
-        if (inp == 1) {
-            System.out.print("> Enrolment file name: ");
-            String enrolmentFileName = scanner.nextLine();
-            System.out.print("> Course file name: ");
-            String courseFileName = scanner.nextLine();
-            System.out.print("> Student file name: ");
-            String studentFileName = scanner.nextLine();
-            run = manager.populateFromFiles(enrolmentFileName, courseFileName, studentFileName);
-        } else {
-            run = manager.populateFromFiles("sampleEnrolments.csv", "sampleCourses.csv", "sampleStudents.csv");
-        }
+        String mainMenu = "\n------MAIN MENU------" + "\n1 List enrolments" + "\n2 Add enrolment"
+                + "\n3 Update enrolment" + "\n4 Delete enrolment" + "\n5 Get all courses from a student in a semester"
+                + "\n6 Get all students from a course in a semester" + "\n7 Get all courses offered in a semester"
+                + "\n8 Quit" + "\n> ";
 
         while (run) {
-            printMainMenu();
-
-            int inp2 = validator.getValidatedIntChoice(8);
+            int inp = validator.getValidatedIntChoice(mainMenu, 8);
             String sid, cid, semester;
 
-            switch (inp2) {
+            switch (inp) {
             case 1:
                 listEnrolments();
                 break;
@@ -94,6 +62,28 @@ public class Main {
         System.out.println("Ending program...");
     }
 
+    public static boolean dbSelect() {
+        boolean run = false;
+        String fileMenu = "\n------DATABASE INPUT------" + "\n1 Import custom database"
+                + "\n2 Use default sample database" + "\n> ";
+
+        int inp = validator.getValidatedIntChoice(fileMenu, 2);
+
+        if (inp == 1) {
+            System.out.print("> Enrolment file name: ");
+            String enrolmentFileName = scanner.nextLine();
+            System.out.print("> Course file name: ");
+            String courseFileName = scanner.nextLine();
+            System.out.print("> Student file name: ");
+            String studentFileName = scanner.nextLine();
+            run = manager.populateFromFiles(enrolmentFileName, courseFileName, studentFileName);
+        } else if (inp == 2) {
+            run = manager.populateFromFiles("sampleEnrolments.csv", "sampleCourses.csv", "sampleStudents.csv");
+        }
+
+        return run;
+    }
+
     public static void listEnrolments() {
         System.out.println();
         List<StudentEnrolment> enrolments = manager.getAll();
@@ -101,6 +91,7 @@ public class Main {
             System.out.println("------------------------------");
             System.out.println(studentEnrolment);
         }
+        System.out.println("------------------------------");
     }
 
     public static void addEnrolment() {
@@ -123,9 +114,8 @@ public class Main {
         while (true) {
             manager.printCoursesPerStudentPerSemester(sid, semester);
 
-            System.out.printf("1 Add a course to this list\n2 Delete a course from this list\n3 Return\n> ");
-
-            int opt = validator.getValidatedIntChoice(3);
+            int opt = validator.getValidatedIntChoice(
+                    "\n1 Add a course to this list\n2 Delete a course from this list\n3 Return\n> ", 3);
 
             if (opt == 3)
                 return;
@@ -140,13 +130,13 @@ public class Main {
         System.out.println("\n------DELETE ENROLMENT------");
         List<StudentEnrolment> enrolments = manager.getAll();
         int sz = enrolments.size();
+        String menu = "Please enter the index of the enrolment you want to delete (0 to return): ";
 
         for (int i = 0; i < sz; i++)
             System.out.println((i + 1) + "/\n" + enrolments.get(i));
 
         while (true) {
-            System.out.print("Please enter the index of the enrolment you want to delete (0 to return): ");
-            int inp = validator.getValidatedIntChoice(0, sz);
+            int inp = validator.getValidatedIntChoice(menu, 0, sz);
             if (inp == 0)
                 return;
 
