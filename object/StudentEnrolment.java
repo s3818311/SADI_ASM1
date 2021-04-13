@@ -1,3 +1,5 @@
+package object;
+
 public class StudentEnrolment {
     private String studentName;
     private String courseName;

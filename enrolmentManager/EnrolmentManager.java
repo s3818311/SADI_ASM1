@@ -1,6 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+package enrolmentManager;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -10,15 +9,22 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.StringJoiner;
+
+import fileManager.CourseFileManager;
+import fileManager.EnrolmentFileManager;
+import fileManager.StudentFileManager;
+import object.Course;
+import object.Student;
+import object.StudentEnrolment;
 
 public class EnrolmentManager implements StudentEnrolmentManager {
     private Set<StudentEnrolment> studentEnrolments = new LinkedHashSet<>();
     private Set<Course> coursesList = new LinkedHashSet<>();
     private Set<Student> studentsList = new LinkedHashSet<>();
 
-    private String enrolmentFileName = "sampleEnrolments.csv";
-    private File enrolmentFile;
+    EnrolmentFileManager enrolmentFileManager;
+    StudentFileManager studentFileManager;
+    CourseFileManager courseFileManager;
 
     private EnrolmentManager() {
     };
@@ -32,7 +38,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return INSTANCE;
     }
 
-    protected static EnrolmentManager getTestInstance() {
+    public static EnrolmentManager getTestInstance() {
         return new EnrolmentManager();
     }
 
@@ -43,17 +49,17 @@ public class EnrolmentManager implements StudentEnrolmentManager {
 
     @Override
     public void update(int opt, String sname, String cname, String semester) {
-        StudentEnrolment temp = new StudentEnrolment(sname, cname, semester);
+        StudentEnrolment enrolment = getOne(sname, cname, semester);
         if (opt == 1) {
-            if (!add(temp))
+            if (enrolment == null)
+                add(new StudentEnrolment(sname, cname, semester));
+            else
                 System.out.println("Course already exist in the list.");
-        } else {
-            for (StudentEnrolment enrolment : studentEnrolments)
-                if (enrolment.equals(temp)) {
-                    studentEnrolments.remove(enrolment);
-                    return;
-                }
-            System.out.println("Course does not exist in the list.");
+        } else if (opt == 2) {
+            if (enrolment == null)
+                System.out.println("Course does not exist in the list.");
+            else
+                studentEnrolments.remove(enrolment);
         }
     }
 
@@ -67,7 +73,14 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     @Override
-    public StudentEnrolment getOne() {
+    public StudentEnrolment getOne(String sname, String cname, String semester) {
+        StudentEnrolment temp = new StudentEnrolment(sname, cname, semester);
+        for (StudentEnrolment enrolment : studentEnrolments) {
+            if (enrolment.equals(temp)) {
+                return enrolment.clone();
+            }
+        }
+
         return null;
     }
 
@@ -81,20 +94,18 @@ public class EnrolmentManager implements StudentEnrolmentManager {
     }
 
     public boolean populateFromFiles(String enrolmentFileName, String courseFileName, String studentFileName) {
-        this.enrolmentFileName = enrolmentFileName;
-        this.enrolmentFile = new File(enrolmentFileName);
-
-        Scanner enrolmentScanner;
-        Scanner courseScanner;
-        Scanner studentScanner;
         try {
-            enrolmentScanner = new Scanner(enrolmentFile);
-            courseScanner = new Scanner(new File(courseFileName));
-            studentScanner = new Scanner(new File(studentFileName));
-        } catch (FileNotFoundException e) {
+            enrolmentFileManager = new EnrolmentFileManager(enrolmentFileName);
+            studentFileManager = new StudentFileManager(studentFileName);
+            courseFileManager = new CourseFileManager(courseFileName);
+        } catch (IOException e) {
             System.out.println("Database file does not exist or cannot be found.");
             return false;
         }
+
+        Scanner enrolmentScanner = enrolmentFileManager.getFileScanner();
+        Scanner courseScanner = courseFileManager.getFileScanner();
+        Scanner studentScanner = studentFileManager.getFileScanner();
 
         populateEnrolment(enrolmentScanner);
         populateCourse(courseScanner);
@@ -105,9 +116,13 @@ public class EnrolmentManager implements StudentEnrolmentManager {
             return false;
         }
 
-        enrolmentScanner.close();
-        courseScanner.close();
-        studentScanner.close();
+        enrolmentFileManager.setEnrolments(studentEnrolments);
+        courseFileManager.setCourses(coursesList);
+        studentFileManager.setStudents(studentsList);
+
+        enrolmentFileManager.closeScanner();
+        courseFileManager.closeScanner();
+        studentFileManager.closeScanner();
 
         System.out.println("Database was successfully imported.");
 
@@ -135,74 +150,87 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         }
     }
 
-    protected void finalize() throws IOException {
-        File newFile = new File("_" + enrolmentFileName);
+    public void finalize() throws IOException {
+        enrolmentFileManager.dumpToFile();
+    }
 
-        ArrayList<String> data = new ArrayList<>();
+    public List<String> getCoursesPerStudentPerSemester(String name, String semester) {
+        ArrayList<String> list = new ArrayList<>();
         for (StudentEnrolment enrolment : studentEnrolments) {
-            StringJoiner s = new StringJoiner(",");
-            s.add(enrolment.getStudentName());
-            s.add(enrolment.getCourseName());
-            s.add(enrolment.getSemester());
-
-            data.add(s.toString() + '\n');
+            if (enrolment.getStudentName().equals(name) && enrolment.getSemester().equals(semester))
+                list.add(enrolment.getCourseName());
         }
 
-        FileWriter fileWriter = new FileWriter(newFile);
-        for (String s : data)
-            fileWriter.append(s);
-        fileWriter.close();
-
-        if (!(enrolmentFile.delete() && newFile.renameTo(enrolmentFile)))
-            throw new IOException("Files deletion or renaming failed");
-
+        return list;
     }
 
-    protected void printCoursesPerStudentPerSemester(String name, String semester) {
-        boolean empty = true;
-        System.out.printf("\n%s's courses in semester %s:\n", name, semester);
-        for (StudentEnrolment enrolment : studentEnrolments)
-            if (enrolment.getStudentName().equals(name) && enrolment.getSemester().equals(semester)) {
-                System.out.printf(" |- %s\n", enrolment.getCourseName());
-                empty = false;
-            }
+    public void printCoursesPerStudentPerSemester(String name, String semester) {
+        List<String> list = getCoursesPerStudentPerSemester(name, semester);
 
-        if (empty) {
+        if (list.isEmpty()) {
             System.out.printf("\nNo courses for %s in semester %s found.\n", name, semester);
+            return;
         }
+
+        System.out.printf("\n%s's courses in semester %s:\n", name, semester);
+        for (String course : list)
+            System.out.printf(" |- %s\n", course);
     }
 
-    protected void printStudentsPerCoursePerSemester(String name, String semester) {
-        boolean empty = true;
-        System.out.printf("\nStudents enrolling in %s for semester %s:\n", name, semester);
-        for (StudentEnrolment enrolment : studentEnrolments)
+    public List<String> getStudentsPerCoursePerSemester(String name, String semester) {
+        ArrayList<String> list = new ArrayList<>();
+        for (StudentEnrolment enrolment : studentEnrolments) {
             if (enrolment.getCourseName().equals(name) && enrolment.getSemester().equals(semester)) {
-                System.out.printf(" |- %s\n", enrolment.getStudentName());
-                empty = false;
+                list.add(enrolment.getStudentName());
             }
+        }
 
-        if (empty) {
+        return list;
+    }
+
+    public void printStudentsPerCoursePerSemester(String name, String semester) {
+        List<String> list = getStudentsPerCoursePerSemester(name, semester);
+
+        if (list.isEmpty()) {
             System.out.printf("No students enrolled in %s for semester %s found.\n", name, semester);
+            return;
+        }
+
+        System.out.printf("\nStudents enrolling in %s for semester %s:\n", name, semester);
+        for (String student : list) {
+            System.out.printf(" |- %s\n", student);
         }
     }
 
-    protected void printCoursesOfferedPerSemester(String semester) {
+    public List<String> getCoursesOfferedPerSemester(String semester) {
         Set<String> temp = new HashSet<>();
-        System.out.printf("\nCourses offered in semester %s:\n", semester);
+
         for (StudentEnrolment enrolment : studentEnrolments) {
             String cname = enrolment.getCourseName();
             if (enrolment.getSemester().equals(semester) && !temp.contains(cname)) {
-                System.out.printf(" |- %s\n", cname);
                 temp.add(cname);
             }
         }
 
-        if (temp.isEmpty()) {
-            System.out.printf("No courses currently offered for semester %s\n", semester);
-        }
+        return new ArrayList<>(temp);
     }
 
-    protected List<Student> getStudents() {
+    public void printCoursesOfferedPerSemester(String semester) {
+        List<String> list = getCoursesOfferedPerSemester(semester);
+
+        if (list.isEmpty()) {
+            System.out.printf("No courses currently offered for semester %s\n", semester);
+            return;
+        }
+
+        System.out.printf("\nCourses offered in semester %s:\n", semester);
+        for (String course : list) {
+            System.out.printf(" |- %s\n", course);
+        }
+
+    }
+
+    public List<Student> getStudents() {
         List<Student> copy = new ArrayList<>();
         for (Student student : studentsList)
             copy.add(student.clone());
@@ -210,7 +238,7 @@ public class EnrolmentManager implements StudentEnrolmentManager {
         return copy;
     }
 
-    protected List<Course> getCourses() {
+    public List<Course> getCourses() {
         List<Course> copy = new ArrayList<>();
         for (Course course : coursesList)
             copy.add(course.clone());

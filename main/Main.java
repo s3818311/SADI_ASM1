@@ -1,13 +1,23 @@
+package main;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+
+import enrolmentManager.EnrolmentManager;
+import fileManager.ReportFileManager;
+import helper.InputValidator;
+import object.Course;
+import object.Student;
+import object.StudentEnrolment;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
     private static EnrolmentManager manager = EnrolmentManager.getInstance();
     private static InputValidator validator = InputValidator.getInstance();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         boolean run = dbSelect();
 
         String mainMenu = "\n------MAIN MENU------" + "\n1 List enrolments" + "\n2 Add enrolment"
@@ -17,7 +27,6 @@ public class Main {
 
         while (run) {
             int inp = validator.getValidatedIntChoice(mainMenu, 10);
-            String sid, cid, semester;
 
             switch (inp) {
             case 1:
@@ -33,18 +42,13 @@ public class Main {
                 deleteEnrolment();
                 break;
             case 5:
-                sid = validator.getValidatedStudentName("Please enter the student name: ");
-                semester = validator.getValidatedSemester("Please enter the semester: ");
-                manager.printCoursesPerStudentPerSemester(sid, semester);
+                coursesPerStudentPerSemester();
                 break;
             case 6:
-                cid = validator.getValidatedCourseName("Please enter the course name: ");
-                semester = validator.getValidatedSemester("Please enter the semester: ");
-                manager.printStudentsPerCoursePerSemester(cid, semester);
+                studentsPerCoursePerSemester();
                 break;
             case 7:
-                semester = validator.getValidatedSemester("Please enter the semester: ");
-                manager.printCoursesOfferedPerSemester(semester);
+                coursesOfferedPerSemester();
                 break;
             case 8:
                 printAllStudents();
@@ -149,6 +153,67 @@ public class Main {
             manager.delete(inp - 1);
             System.out.println(" - Enrolment successfully removed");
         }
+    }
+
+    public static void coursesPerStudentPerSemester() throws IOException {
+        String name = validator.getValidatedStudentName("Please enter the student name: ");
+        String semester = validator.getValidatedSemester("Please enter the semester: ");
+
+        manager.printCoursesPerStudentPerSemester(name, semester);
+
+        if (validator.getValidateYesNo("Do you want to save this report? (Y/N) > ")) {
+            ReportFileManager fileManager = null;
+            try {
+                fileManager = new ReportFileManager(String.format("Courses for %s in semester %s.csv", name, semester));
+                fileManager.setList(manager.getCoursesPerStudentPerSemester(name, semester));
+                fileManager.dumpToFile();
+            } catch (FileNotFoundException e) {
+                fileManager.createFile();
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving report. Report not saved!");
+            }
+        }
+
+    }
+
+    public static void studentsPerCoursePerSemester() throws IOException {
+        String name = validator.getValidatedCourseName("Please enter the course name: ");
+        String semester = validator.getValidatedSemester("Please enter the semester: ");
+
+        manager.printStudentsPerCoursePerSemester(name, semester);
+
+        if (validator.getValidateYesNo("Do you want to save this report? (Y/N) > ")) {
+            ReportFileManager fileManager = null;
+            try {
+                fileManager = new ReportFileManager(String.format("Students in %s in semester %s.csv", name, semester));
+                fileManager.setList(manager.getStudentsPerCoursePerSemester(name, semester));
+                fileManager.dumpToFile();
+            } catch (FileNotFoundException e) {
+                fileManager.createFile();
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving report. Report not saved!");
+            }
+        }
+    }
+
+    public static void coursesOfferedPerSemester() throws IOException {
+        String semester = validator.getValidatedSemester("Please enter the semester: ");
+
+        manager.printCoursesOfferedPerSemester(semester);
+
+        if (validator.getValidateYesNo("Do you want to save this report? (Y/N) > ")) {
+            ReportFileManager fileManager = null;
+            try {
+                fileManager = new ReportFileManager(String.format("Courses offered in semester %s.csv", semester));
+                fileManager.setList(manager.getCoursesOfferedPerSemester(semester));
+                fileManager.dumpToFile();
+            } catch (FileNotFoundException e) {
+                fileManager.createFile();
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving report. Report not saved!");
+            }
+        }
+
     }
 
     public static void printAllStudents() {

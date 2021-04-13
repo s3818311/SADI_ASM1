@@ -1,6 +1,12 @@
+package helper;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import enrolmentManager.EnrolmentManager;
+import main.Main;
+import object.*;
 
 public class InputValidator {
     private Scanner scanner = Main.scanner;
@@ -90,6 +96,18 @@ public class InputValidator {
 
     public int getValidatedIntChoice(String prompt, int max) {
         return getValidatedIntChoice(prompt, 1, max);
+    }
+
+    public boolean getValidateYesNo(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String inp = scanner.nextLine().toLowerCase();
+            if (inp.equals("y") || inp.equals("n")) {
+                return inp.equals("y");
+            } else {
+                System.out.println("Please enter either Y or N.");
+            }
+        }
     }
 
 }
