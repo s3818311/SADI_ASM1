@@ -19,22 +19,15 @@ public class ReportFileManager extends FileManager {
 
     @Override
     public void dumpToFile() throws IOException {
-        File newFile = new File(fileName + ".tmp");
-
         List<String> data = new ArrayList<>();
 
         for (String s : list) {
             data.add(s + ",\n");
         }
 
-        FileWriter fileWriter = new FileWriter(newFile);
+        FileWriter fileWriter = new FileWriter(file);
         for (String s : data)
             fileWriter.append(s);
         fileWriter.close();
-
-        if (!(file.delete() && newFile.renameTo(file)))
-            throw new IOException("Enrolment file deletion or renaming failed");
-
     }
-
 }
